@@ -1,0 +1,66 @@
+import numpy as np
+
+class NeuralNetwork:
+    def __init__(self, input_size, hidden_layers, output_size):
+        self.input_size = input_size
+        self.hidden_layers = hidden_layers
+        self.output_size = output_size
+        
+        # Initialize weights and biases for hidden layers
+        self.weights_hidden = []
+        self.biases_hidden = []
+        input_units = input_size
+        for layer_units in hidden_layers:
+            self.weights_hidden.append(np.random.randn(input_units, layer_units))
+            self.biases_hidden.append(np.zeros((1, layer_units)))
+            input_units = layer_units
+        
+        # Initialize weights and biases for output layer
+        self.weights_output = np.random.randn(input_units, output_size)
+        self.biases_output = np.zeros((1, output_size))
+    
+    def tanh(self, x):
+        return np.tanh(x)
+    
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
+    
+    def feedforward(self, x):
+        # Forward pass through hidden layers
+        hidden_output = x
+        for i in range(len(self.hidden_layers)):
+            hidden_output = self.tanh(np.dot(hidden_output, self.weights_hidden[i]) + self.biases_hidden[i])
+        
+        # Forward pass through output layer
+        output = self.sigmoid(np.dot(hidden_output, self.weights_output) + self.biases_output)
+        return output
+    
+    def summary(self):
+        print("Input Layer ({} neurons):".format(self.input_size))
+        print("  Shape: ({},)".format(self.input_size))
+        print("  Activation: Linear")
+        
+        for i, layer_units in enumerate(self.hidden_layers):
+            print("\nHidden Layer {} ({} neurons):".format(i+1, layer_units))
+            print("  Shape: ({},)".format(layer_units))
+            print("  Activation: Tanh")
+            
+        print("\nOutput Layer ({} neurons):".format(self.output_size))
+        print("  Shape: ({},)".format(self.output_size))
+        print("  Activation: Sigmoid")
+
+# Example usage
+input_size = 10
+hidden_layers = [50, 60]
+output_size = 2
+
+# Create neural network
+model = NeuralNetwork(input_size, hidden_layers, output_size)
+
+# Test feedforward
+input_data = np.random.randn(1, input_size)  # Sample input data
+print("Input",input_data)
+output = model.feedforward(input_data)
+print("Output:", output)
+# Print model summary
+model.summary()
